@@ -33,11 +33,15 @@ impl<DB: TrieDB> MPTTrie<DB> {
     }
 
     pub fn get(&self, key: &[u8]) -> ProtocolResult<Option<Bytes>> {
-        Ok(self
+        let value = self
             .trie
             .get(key)
             .map_err(MPTTrieError::from)?
-            .map(Bytes::from))
+            .map(Bytes::from);
+        // let v = value.clone().map(|r| Hex::encode(&r));
+        // println!("get contract address, key: {:?}, value: {:?}",
+        // Hex::encode(key).as_string(), v);
+        Ok(value)
     }
 
     pub fn contains(&self, key: &[u8]) -> ProtocolResult<bool> {

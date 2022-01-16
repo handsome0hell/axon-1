@@ -146,6 +146,7 @@ impl EvmExecutor {
         let remain_gas = executor.gas();
         let gas_used = executor.used_gas();
 
+        // println!("after exec, exit_reason: {:?}", exit_reason);
         let code_address = if exit_reason.is_succeed() {
             let (values, logs) = executor.into_state().deconstruct();
             backend.apply(values, logs, true);

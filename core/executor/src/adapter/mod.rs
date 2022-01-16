@@ -271,6 +271,7 @@ where
                 code_hash:    NIL_DATA,
             },
         };
+        // println!("reset storage: {}", reset_storage);
 
         let storage_root = if reset_storage {
             RLP_NULL
@@ -285,6 +286,7 @@ where
         };
 
         storage.into_iter().for_each(|(k, v)| {
+            // println!("storage insert key: {:?}, value: {:?}", k, v);
             let _ = storage_trie.insert(k.as_bytes(), v.as_bytes());
         });
 
@@ -313,6 +315,7 @@ where
             }
         }
 
+        // println!("address: {:?}, new_account: {:?}", address, new_account);
         let bytes = new_account.encode().unwrap();
 
         {
