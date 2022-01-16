@@ -510,7 +510,6 @@ pub fn dynamic_opcode_cost<H: Handler>(
 		}
 		Opcode::SHA3 => {
 			let peek = stack.peek(0)?;
-			// println!("[EVM] SHA3 operate peek {:?}, stake {:?}", peek, stack);
 			let len = U256::from_big_endian(&peek[..]);
 			GasCost::Sha3 { len }
 		}

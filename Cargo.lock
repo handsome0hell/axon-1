@@ -1519,6 +1519,7 @@ version = "0.33.0"
 dependencies = [
  "environmental",
  "evm-core",
+ "hex",
  "primitive-types",
  "sha3 0.8.2",
 ]

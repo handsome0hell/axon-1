@@ -1164,7 +1164,10 @@ impl<'config, 'precompiles, S: StackState<'config>, P: PrecompileSet> Handler
 					self.state.metadata_mut().access_address(address)
 				}
 				StorageTarget::Slot(address, key) => {
-					// println!("[EVM] access_storage, address {:?}, storage {:?}", address, key);
+					// println!(
+					// 	"[EVM] access_storage, address {:?}, storage {:?}",
+					// 	address, key
+					// );
 					self.state.metadata_mut().access_storage(address, key)
 				}
 				StorageTarget::None => (),

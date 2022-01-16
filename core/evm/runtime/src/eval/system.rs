@@ -21,7 +21,9 @@ pub fn sha3<H: Handler>(runtime: &mut Runtime) -> Control<H> {
 		runtime.machine.memory_mut().get(from, len)
 	};
 
+	// println!("SHA3 digist data: {:?}", hex::encode(data.as_slice()));
 	let ret = Keccak256::digest(data.as_slice());
+	// println!("SHA3 result: {:?}", H256::from_slice(ret.as_slice()));
 	push!(runtime, H256::from_slice(ret.as_slice()));
 
 	Control::Continue
