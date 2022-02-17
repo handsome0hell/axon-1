@@ -942,7 +942,7 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
- "tokio-util 0.6.9",
+ "tokio-util 0.7.0",
 ]
 
 [[package]]
@@ -1033,7 +1033,7 @@ dependencies = [
  "snap",
  "socket2",
  "tentacle",
- "tokio-util 0.6.9",
+ "tokio-util 0.7.0",
  "x25519-dalek",
  "zeroize_derive",
 ]
