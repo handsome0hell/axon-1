@@ -1,14 +1,24 @@
 import { getRequester, testAssertMatchObject } from "./utils.js";
+import util from "util";
 
-testAssertMatchObject(
-  "GET / fully match",
-  getRequester().get("/"),
-  { data: "Hi\n" },
-);
+describe("Metamask", () => {
+  beforeAll(async () => {
+    await metamask.addNetwork({
+      networkName: "Axon",
+      rpc: "http://localhost:8000",
+      chainId: 5,
+    });
 
-test(
-  "GET / conditionally match",
-  async () => {
-    expect((await getRequester().get("/")).data).toContain("Hi");
-  },
-);
+    await Promise.all([page.goto("http://localhost:8080"), page.bringToFront()]);
+  });
+
+  test("net_version", async () => {
+    await page.click("#getChainId");
+
+    await page.waitForFunction(
+      () => document.getElementById("chainId").innerText !== "",
+    );
+
+    await expect(page.$eval("#chainId", (e) => e.innerText)).resolves.toBe("0x5");
+  });
+});
