@@ -23,7 +23,7 @@ jobs:
           args: '-p core-executor -p core-mempool -p core-storage -- --test-threads 1'
 
       - name: upload to codecov.io
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           token: ${{secrets.CODECOV_TOKEN}}
 
