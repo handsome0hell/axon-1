@@ -24,7 +24,7 @@ jobs:
 
       # - name: Install moleculec
       #   run: cargo install moleculec --locked --version "0.6.0"
-      - uses: actions/setup-node@v3.0.0
+      - uses: actions/setup-node@v3.4.1
         with:
           node-version: '16.x'
 
