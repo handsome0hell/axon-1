@@ -1587,7 +1587,7 @@ dependencies = [
  "common-config-parser",
  "common-crypto",
  "core-executor",
- "ethabi 17.2.0",
+ "ethabi 18.0.0",
  "ethabi-contract",
  "ethabi-derive",
  "ethers-contract",
@@ -2384,23 +2384,6 @@ dependencies = [
 name = "ethabi"
 version = "17.0.0"
 source = "git+https://github.com/rust-ethereum/ethabi.git?rev=7edf185#7edf185125a9560d43bba0f84432a7cc874a5218"
-dependencies = [
- "ethereum-types 0.13.1",
- "hex",
- "once_cell",
- "regex",
- "serde",
- "serde_json",
- "sha3",
- "thiserror",
- "uint",
-]
-
-[[package]]
-name = "ethabi"
-version = "17.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e4966fba78396ff92db3b817ee71143eccd98acf0f876b8d600e585a670c5d1b"
 dependencies = [
  "ethereum-types 0.13.1",
  "hex",
