@@ -34,6 +34,7 @@ rocksdb = { version = "0.19", package = "ckb-rocksdb" }
 rug = "1.19"
 sha2 = "0.10"
 thiserror = "1.0"
+tokio = { version = "1.25", features = ["full"] }
 
 [dev-dependencies]
 bytemuck = "1.13"
