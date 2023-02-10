@@ -15,11 +15,10 @@ pub use crate::utils::{
     code_address, decode_revert_msg, logs_bloom, DefaultFeeAllocator, FeeInlet,
 };
 
-use std::collections::BTreeMap;
 use std::iter::FromIterator;
 
 use arc_swap::ArcSwap;
-use evm::executor::stack::{MemoryStackState, PrecompileFn, StackExecutor, StackSubstateMetadata};
+use evm::executor::stack::{MemoryStackState, PrecompileSet, StackExecutor, StackSubstateMetadata};
 use evm::CreateScheme;
 
 use common_merkle::TrieMerkle;
@@ -64,7 +63,7 @@ impl Executor for AxonExecutor {
         let config = Config::london();
         let metadata = StackSubstateMetadata::new(gas_limit, &config);
         let state = MemoryStackState::new(metadata, backend);
-        let precompiles = build_precompile_set();
+        let precompiles = build_precompile_set(backend.block_timestamp());
         let mut executor = StackExecutor::new_with_precompiles(state, &config, &precompiles);
 
         let base_gas = if to.is_some() {
@@ -125,7 +124,7 @@ impl Executor for AxonExecutor {
         let mut res = Vec::with_capacity(txs_len);
         let mut hashes = Vec::with_capacity(txs_len);
         let (mut gas, mut fee) = (0u64, U256::zero());
-        let precompiles = build_precompile_set();
+        let precompiles = build_precompile_set(backend.block_timestamp());
         let config = Config::london();
 
         for tx in txs.iter() {
@@ -191,7 +190,7 @@ impl AxonExecutor {
     pub fn evm_exec<B: Backend + ApplyBackend + Adapter>(
         backend: &mut B,
         config: &Config,
-        precompiles: &BTreeMap<H160, PrecompileFn>,
+        precompiles: &impl PrecompileSet,
         tx: &SignedTransaction,
     ) -> TxResp {
         // Deduct pre-pay gas

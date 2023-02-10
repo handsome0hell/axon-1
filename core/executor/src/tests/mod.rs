@@ -7,7 +7,7 @@ use evm::backend::{MemoryAccount, MemoryBackend, MemoryVicinity};
 use evm::Config;
 
 use protocol::types::{
-    Bytes, Eip1559Transaction, ExitReason, ExitSucceed, Public, SignatureComponents,
+    Backend, Bytes, Eip1559Transaction, ExitReason, ExitSucceed, Public, SignatureComponents,
     SignedTransaction, TransactionAction, UnsignedTransaction, UnverifiedTransaction, H160, H256,
     MAX_BLOCK_GAS_LIMIT, U256,
 };
@@ -88,7 +88,7 @@ fn test_ackermann31() {
         hex_decode("2839e92800000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000001").unwrap()
     );
     let config = Config::london();
-    let precompiles = build_precompile_set();
+    let precompiles = build_precompile_set(backend.block_timestamp());
     let r = executor.inner_exec(&mut backend, &config, MAX_BLOCK_GAS_LIMIT, &precompiles, tx);
 
     assert_eq!(r.exit_reason, ExitReason::Succeed(ExitSucceed::Returned));
@@ -116,7 +116,7 @@ fn test_simplestorage() {
 
     let executor = EvmExecutor::default();
     let config = Config::london();
-    let precompiles = build_precompile_set();
+    let precompiles = build_precompile_set(backend.block_timestamp());
 
     // pragma solidity ^0.4.24;
     //

@@ -19,9 +19,12 @@ mod verify_by_ckb_vm;
 use std::collections::BTreeMap;
 
 use bn::{AffineG1, Fq, Fr, Group, G1};
-use evm::executor::stack::{PrecompileFailure, PrecompileFn, PrecompileOutput};
+use evm::executor::stack::{
+    PrecompileFailure, PrecompileFn, PrecompileHandle, PrecompileOutput, PrecompileSet,
+};
 use evm::{Context, ExitError};
 
+use ethers::types::U256;
 use protocol::types::H160;
 
 use crate::precompiles::{
@@ -84,19 +87,63 @@ const fn precompile_address(addr: u8) -> H160 {
     ])
 }
 
-pub fn build_precompile_set() -> BTreeMap<H160, PrecompileFn> {
-    precompiles!(
-        EcRecover,
-        Sha256,
-        Ripemd160,
-        Identity,
-        ModExp,
-        EcAdd,
-        EcMul,
-        EcPairing,
-        Blake2F,
-        ETHVerifier
-    )
+pub struct StatefulPrecompileSet {
+    pure_contracts: BTreeMap<H160, PrecompileFn>,
+    timestamp:      U256,
+}
+
+impl PrecompileSet for StatefulPrecompileSet {
+    fn execute(
+        &self,
+        handle: &mut impl PrecompileHandle,
+    ) -> Option<Result<PrecompileOutput, PrecompileFailure>> {
+        let address = handle.code_address();
+
+        let precompile = self.pure_contracts.get(&address);
+        if precompile.is_none() && address != ETHVerifier::ADDRESS {
+            return None;
+        };
+
+        let input = handle.input();
+        let gas_limit = handle.gas_limit();
+        let context = handle.context();
+        let is_static = handle.is_static();
+
+        Some(
+            match match precompile {
+                Some(precompile) => (*precompile)(input, gas_limit, context, is_static),
+                None => {
+                    if address == ETHVerifier::ADDRESS {
+                        ETHVerifier::exec_fn(self.timestamp, input, gas_limit, context, is_static)
+                    } else {
+                        return None;
+                    }
+                }
+            } {
+                Ok((output, cost)) => handle
+                    .record_cost(cost)
+                    .map(|_| output)
+                    .map_err(|err| err.into()),
+                Err(err) => Err(err),
+            },
+        )
+    }
+
+    /// Check if the given address is a precompile. Should only be called to
+    /// perform the check while not executing the precompile afterward, since
+    /// `execute` already performs a check internally.
+    fn is_precompile(&self, address: H160) -> bool {
+        self.pure_contracts.contains_key(&address) || address == ETHVerifier::ADDRESS
+    }
+}
+
+pub fn build_precompile_set(timestamp: U256) -> StatefulPrecompileSet {
+    StatefulPrecompileSet {
+        pure_contracts: precompiles!(
+            EcRecover, Sha256, Ripemd160, Identity, ModExp, EcAdd, EcMul, EcPairing, Blake2F
+        ),
+        timestamp,
+    }
 }
 
 pub(crate) fn read_point(input: &[u8], start: usize) -> Result<G1, PrecompileFailure> {

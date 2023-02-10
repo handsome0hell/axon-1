@@ -1,9 +1,7 @@
-use std::collections::BTreeMap;
-
-use evm::executor::stack::{MemoryStackState, PrecompileFn, StackExecutor, StackSubstateMetadata};
+use evm::executor::stack::{MemoryStackState, PrecompileSet, StackExecutor, StackSubstateMetadata};
 
 use protocol::traits::{ApplyBackend, Backend};
-use protocol::types::{Config, SignedTransaction, TransactionAction, TxResp, H160, U256};
+use protocol::types::{Config, SignedTransaction, TransactionAction, TxResp, U256};
 
 // deprecated
 #[allow(dead_code)]
@@ -17,7 +15,7 @@ impl EvmExecutor {
         backend: &mut B,
         config: &Config,
         gas_limit: u64,
-        precompiles: &BTreeMap<H160, PrecompileFn>,
+        precompiles: &impl PrecompileSet,
         tx: SignedTransaction,
     ) -> TxResp {
         let old_nonce = backend.basic(tx.sender).nonce;
